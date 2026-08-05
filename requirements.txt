@@ -1,0 +1,30 @@
+# ─────────────────────────────────────────────
+# RAG Mutual Fund FAQ Assistant — Dependencies
+# ─────────────────────────────────────────────
+
+# ── Core Framework ──────────────────────────
+fastapi>=0.111.0
+uvicorn[standard]>=0.30.0
+python-dotenv>=1.0.0
+pyyaml>=6.0.1
+
+# ── RAG Pipeline ────────────────────────────
+langchain>=0.2.0
+langchain-community>=0.2.0
+chromadb>=0.5.0
+sentence-transformers>=3.0.0
+
+# ── LLM (Groq) ──────────────────────────────
+groq>=0.9.0
+
+# ── Document Loading ─────────────────────────
+beautifulsoup4>=4.12.0
+requests>=2.32.0
+pdfplumber>=0.11.0
+
+# ── Guardrails ───────────────────────────────
+regex>=2024.5.0
+
+# ── Testing ──────────────────────────────────
+pytest>=8.2.0
+httpx>=0.27.0

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="HDFC Mutual Fund FAQ Assistant — Ask factual questions about HDFC mutual fund schemes. Facts only. No investment advice." />
+  <title>HDFC MF FAQ Assistant</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── Disclaimer Banner ─────────────────────────────────────────────────── -->
+  <div class="disclaimer-banner" role="alert" aria-live="polite">
+    ⚠️ &nbsp;Facts only. This assistant does <strong>not</strong> provide investment advice.
+    Consult a SEBI-registered adviser before investing.
+  </div>
+
+  <!-- ── Main Container ────────────────────────────────────────────────────── -->
+  <main class="container" role="main">
+
+    <!-- Welcome / Header -->
+    <header class="welcome">
+      <h1>👋 HDFC Mutual Fund FAQ Assistant</h1>
+      <p>
+        Ask me factual questions about <strong>HDFC Mutual Fund</strong> schemes — NAV,
+        expense ratio, exit load, minimum SIP, and more.
+      </p>
+    </header>
+
+    <!-- Example Questions -->
+    <section class="examples" aria-label="Example questions">
+      <p class="examples-label">Try one of these:</p>
+      <ul id="example-list" class="example-list">
+        <!-- Populated by script.js via GET /api/examples -->
+      </ul>
+    </section>
+
+    <!-- Chat History Area -->
+    <section class="chat-area" aria-label="Chat history" aria-live="polite">
+      <div id="chat-history" class="chat-history">
+        <!-- Messages inserted by script.js -->
+      </div>
+    </section>
+
+    <!-- Input Row -->
+    <form class="input-row" id="chat-form" aria-label="Ask a question">
+      <label for="query-input" class="sr-only">Your question</label>
+      <input
+        type="text"
+        id="query-input"
+        class="query-input"
+        placeholder="Type your question about an HDFC scheme…"
+        maxlength="500"
+        autocomplete="off"
+        aria-required="true"
+      />
+      <button type="submit" id="send-btn" class="send-btn">Send</button>
+    </form>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

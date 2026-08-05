@@ -1,0 +1,148 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# GitHub Actions — Weekday Ingestion Workflow
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# Schedule : Mon–Sat at 10:30 AM IST (UTC 05:00)
+# Triggers : Cron + manual dispatch (workflow_dispatch)
+#
+# Jobs:
+#   1. check-holiday  : Skip execution on NSE/BSE holidays
+#   2. ingest         : Run full ingestion pipeline (depends on check-holiday)
+#   3. commit-results : Auto-commit updated vector store on change
+#   4. notify-failure : Create a GitHub Issue on ingestion failure
+#
+# Phase 0: Workflow scaffold with correct triggers and job stubs.
+# Phase 5: Full implementation with Railway deployment integration.
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: Weekday Ingestion
+
+on:
+  # Mon–Sat 10:30 AM IST = 05:00 UTC
+  schedule:
+    - cron: "0 5 * * 1-6"
+
+  # Allow manual runs from the Actions tab
+  workflow_dispatch:
+    inputs:
+      force_run:
+        description: "Force run even on holidays"
+        required: false
+        default: "false"
+        type: boolean
+
+env:
+  PYTHON_VERSION: "3.11"
+  CORPUS_CONFIG:  "data/corpus.yml"
+  VECTORSTORE:    "data/vectorstore"
+
+jobs:
+  # ── Job 1: Holiday Check ────────────────────────────────────────────────────
+  check-holiday:
+    name: Holiday Check
+    runs-on: ubuntu-latest
+    outputs:
+      is_holiday: ${{ steps.check.outputs.is_holiday }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Check if today is a market holiday
+        id: check
+        run: |
+          python - <<'EOF'
+          import json
+          import datetime
+          import os
+
+          today = datetime.date.today().isoformat()
+          force = "${{ github.event.inputs.force_run }}" == "true"
+
+          with open("data/holidays.json") as f:
+              holidays = json.load(f)
+
+          is_holiday = today in holidays and not force
+          print(f"Today: {today}")
+          print(f"Is holiday: {is_holiday}")
+
+          with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+              fh.write(f"is_holiday={'true' if is_holiday else 'false'}\n")
+          EOF
+
+  # ── Job 2: Ingestion Pipeline ───────────────────────────────────────────────
+  ingest:
+    name: Ingest Scheme Pages
+    runs-on: ubuntu-latest
+    needs: check-holiday
+    if: needs.check-holiday.outputs.is_holiday == 'false'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run ingestion pipeline
+        env:
+          GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
+          EMBEDDING_MODEL:    "BAAI/bge-small-en-v1.5"
+          VECTORSTORE_PATH:   ${{ env.VECTORSTORE }}
+          VECTORSTORE_COLLECTION: "mf_faq_v1"
+        run: |
+          python scripts/ingest.py \
+            --config ${{ env.CORPUS_CONFIG }} \
+            --output ${{ env.VECTORSTORE }}
+
+      # ── Job 3: Auto-commit updated vector store ──────────────────────────────
+      - name: Commit vector store changes (if any)
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(data): auto-update vectorstore [skip ci]"
+          file_pattern: "data/vectorstore/**"
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "github-actions[bot]@users.noreply.github.com"
+
+  # ── Job 4: Failure Notification ────────────────────────────────────────────
+  notify-failure:
+    name: Notify on Failure
+    runs-on: ubuntu-latest
+    needs: ingest
+    if: failure()
+
+    steps:
+      - name: Create GitHub Issue for ingestion failure
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const today = new Date().toISOString().split('T')[0];
+            await github.rest.issues.create({
+              owner:  context.repo.owner,
+              repo:   context.repo.repo,
+              title:  `[Ingestion Failure] ${today}`,
+              body: [
+                "## ⚠️ Automated Ingestion Failed",
+                "",
+                `**Date**: ${today}`,
+                `**Run**: [${context.runId}](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`,
+                "",
+                "### Next Steps",
+                "1. Check the failed run logs linked above.",
+                "2. Verify Groww page structure has not changed.",
+                "3. Check `GROQ_API_KEY` and other secrets are valid.",
+                "4. Re-trigger manually after fixing: `workflow_dispatch`.",
+              ].join("\n"),
+              labels: ["bug", "automated-ingestion"],
+            });

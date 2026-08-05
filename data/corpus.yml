@@ -1,0 +1,89 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Corpus Registry — HDFC Mutual Fund Schemes
+# This file is the single source of truth for all approved data sources.
+# ─────────────────────────────────────────────────────────────────────────────
+
+amc: "HDFC Mutual Fund"
+
+schemes:
+  - name: "HDFC Small Cap Fund - Direct Growth"
+    category: "Small-Cap"
+  - name: "HDFC Gold ETF Fund of Fund - Direct Plan Growth"
+    category: "Gold / FoF"
+  - name: "HDFC Multi Cap Fund - Direct Growth"
+    category: "Multi-Cap"
+  - name: "HDFC Large Cap Fund - Direct Growth"
+    category: "Large-Cap"
+  - name: "HDFC Mid Cap Fund - Direct Growth"
+    category: "Mid-Cap"
+  - name: "HDFC BSE Sensex Index Fund - Direct Growth"
+    category: "Index"
+  - name: "HDFC Short Term Opportunities Fund - Direct Growth"
+    category: "Debt / Short Duration"
+  - name: "HDFC Focused Fund - Direct Growth"
+    category: "Focused"
+  - name: "HDFC Nifty Next 50 Index Fund - Direct Growth"
+    category: "Index"
+  - name: "HDFC Pharma and Healthcare Fund - Direct Growth"
+    category: "Sectoral / Thematic"
+  - name: "HDFC Balanced Advantage Fund - Direct Growth"
+    category: "Hybrid / Dynamic Asset Allocation"
+  - name: "HDFC Defence Fund - Direct Growth"
+    category: "Sectoral / Thematic"
+
+sources:
+  - url: "https://groww.in/mutual-funds/hdfc-small-cap-fund-direct-growth"
+    type: "scheme_page"
+    scheme: "HDFC Small Cap Fund - Direct Growth"
+
+  - url: "https://groww.in/mutual-funds/hdfc-gold-etf-fund-of-fund-direct-plan-growth"
+    type: "scheme_page"
+    scheme: "HDFC Gold ETF Fund of Fund - Direct Plan Growth"
+
+  - url: "https://groww.in/mutual-funds/hdfc-multi-cap-fund-direct-growth"
+    type: "scheme_page"
+    scheme: "HDFC Multi Cap Fund - Direct Growth"
+
+  - url: "https://groww.in/mutual-funds/hdfc-large-cap-fund-direct-growth"
+    type: "scheme_page"
+    scheme: "HDFC Large Cap Fund - Direct Growth"
+
+  - url: "https://groww.in/mutual-funds/hdfc-mid-cap-fund-direct-growth"
+    type: "scheme_page"
+    scheme: "HDFC Mid Cap Fund - Direct Growth"
+
+  - url: "https://groww.in/mutual-funds/hdfc-bse-sensex-index-fund-direct-growth"
+    type: "scheme_page"
+    scheme: "HDFC BSE Sensex Index Fund - Direct Growth"
+
+  - url: "https://groww.in/mutual-funds/hdfc-short-term-opportunities-fund-direct-growth"
+    type: "scheme_page"
+    scheme: "HDFC Short Term Opportunities Fund - Direct Growth"
+
+  - url: "https://groww.in/mutual-funds/hdfc-focused-fund-direct-growth"
+    type: "scheme_page"
+    scheme: "HDFC Focused Fund - Direct Growth"
+
+  - url: "https://groww.in/mutual-funds/hdfc-nifty-next-50-index-fund-direct-growth"
+    type: "scheme_page"
+    scheme: "HDFC Nifty Next 50 Index Fund - Direct Growth"
+
+  - url: "https://groww.in/mutual-funds/hdfc-pharma-and-healthcare-fund-direct-growth"
+    type: "scheme_page"
+    scheme: "HDFC Pharma and Healthcare Fund - Direct Growth"
+
+  - url: "https://groww.in/mutual-funds/hdfc-balanced-advantage-fund-direct-growth"
+    type: "scheme_page"
+    scheme: "HDFC Balanced Advantage Fund - Direct Growth"
+
+  - url: "https://groww.in/mutual-funds/hdfc-defence-fund-direct-growth"
+    type: "scheme_page"
+    scheme: "HDFC Defence Fund - Direct Growth"
+
+# ── Whitelisted Domains ───────────────────────────────────────────────────────
+# Only URLs from these domains are permitted during ingestion.
+allowed_domains:
+  - "groww.in"
+  - "hdfcfund.com"
+  - "amfiindia.com"
+  - "sebi.gov.in"
