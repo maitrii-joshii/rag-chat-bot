@@ -3,61 +3,149 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="HDFC Mutual Fund FAQ Assistant — Ask factual questions about HDFC mutual fund schemes. Facts only. No investment advice." />
+  <meta name="description" content="HDFC Mutual Fund FAQ Assistant — Get factual answers about NAV, expense ratio, exit load, SIP amounts and more. Facts only. No investment advice." />
+  <meta name="theme-color" content="#0a0e1a" />
   <title>HDFC MF FAQ Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- ── Disclaimer Banner ─────────────────────────────────────────────────── -->
-  <div class="disclaimer-banner" role="alert" aria-live="polite">
-    ⚠️ &nbsp;Facts only. This assistant does <strong>not</strong> provide investment advice.
-    Consult a SEBI-registered adviser before investing.
+  <!-- ── Disclaimer Banner ──────────────────────────────────────────────────── -->
+  <div class="disclaimer-banner" role="alert" aria-live="polite" id="disclaimer-banner">
+    <span class="disclaimer-icon">⚠️</span>
+    <span>
+      <strong>Facts only.</strong> This assistant does <em>not</em> provide investment advice.
+      Consult a SEBI-registered adviser before investing.
+    </span>
   </div>
 
-  <!-- ── Main Container ────────────────────────────────────────────────────── -->
-  <main class="container" role="main">
+  <!-- ── App Shell ──────────────────────────────────────────────────────────── -->
+  <div class="app-shell">
 
-    <!-- Welcome / Header -->
-    <header class="welcome">
-      <h1>👋 HDFC Mutual Fund FAQ Assistant</h1>
-      <p>
-        Ask me factual questions about <strong>HDFC Mutual Fund</strong> schemes — NAV,
-        expense ratio, exit load, minimum SIP, and more.
-      </p>
-    </header>
-
-    <!-- Example Questions -->
-    <section class="examples" aria-label="Example questions">
-      <p class="examples-label">Try one of these:</p>
-      <ul id="example-list" class="example-list">
-        <!-- Populated by script.js via GET /api/examples -->
-      </ul>
-    </section>
-
-    <!-- Chat History Area -->
-    <section class="chat-area" aria-label="Chat history" aria-live="polite">
-      <div id="chat-history" class="chat-history">
-        <!-- Messages inserted by script.js -->
+    <!-- Sidebar / Header panel -->
+    <aside class="sidebar" aria-label="Assistant info">
+      <div class="sidebar-logo">
+        <div class="logo-mark" aria-hidden="true">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="32" height="32" rx="8" fill="url(#logoGrad)"/>
+            <path d="M8 10h6v4H8V10zm0 8h6v4H8v-4zm10-8h6v12h-6V10z" fill="#fff" opacity="0.9"/>
+            <defs>
+              <linearGradient id="logoGrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#4f8ef7"/>
+                <stop offset="1" stop-color="#7c3aed"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="logo-title">HDFC MF</span>
+          <span class="logo-subtitle">FAQ Assistant</span>
+        </div>
       </div>
-    </section>
 
-    <!-- Input Row -->
-    <form class="input-row" id="chat-form" aria-label="Ask a question">
-      <label for="query-input" class="sr-only">Your question</label>
-      <input
-        type="text"
-        id="query-input"
-        class="query-input"
-        placeholder="Type your question about an HDFC scheme…"
-        maxlength="500"
-        autocomplete="off"
-        aria-required="true"
-      />
-      <button type="submit" id="send-btn" class="send-btn">Send</button>
-    </form>
+      <div class="sidebar-info">
+        <div class="info-chip">
+          <span class="chip-dot chip-dot--green"></span>
+          <span id="health-status-text">Connecting…</span>
+        </div>
+        <p class="sidebar-desc">
+          Factual answers about HDFC Mutual Fund schemes — NAV, expense ratio, exit load, SIP minimums, and more.
+        </p>
+      </div>
 
-  </main>
+      <div class="sidebar-examples" aria-label="Example questions">
+        <p class="examples-label">Try asking:</p>
+        <ul id="example-list" class="example-list">
+          <!-- Populated via GET /api/examples -->
+          <li><button type="button" class="example-btn skeleton-btn" aria-label="Loading example"></button></li>
+          <li><button type="button" class="example-btn skeleton-btn" aria-label="Loading example"></button></li>
+          <li><button type="button" class="example-btn skeleton-btn" aria-label="Loading example"></button></li>
+        </ul>
+      </div>
+
+      <footer class="sidebar-footer">
+        <a href="https://www.amfiindia.com" target="_blank" rel="noopener noreferrer" class="amfi-link">
+          AMFI India ↗
+        </a>
+        <span class="sidebar-footer-sep">·</span>
+        <a href="/api/docs" target="_blank" rel="noopener noreferrer" class="amfi-link">
+          API Docs ↗
+        </a>
+      </footer>
+    </aside>
+
+    <!-- Main chat panel -->
+    <main class="chat-panel" role="main">
+
+      <!-- Welcome screen (shown before first message) -->
+      <div class="welcome-screen" id="welcome-screen" aria-label="Welcome">
+        <div class="welcome-icon" aria-hidden="true">💬</div>
+        <h1 class="welcome-title">HDFC Mutual Fund FAQ</h1>
+        <p class="welcome-subtitle">
+          Ask me factual questions about <strong>HDFC scheme details</strong>.<br/>
+          Expense ratios, exit loads, NAV, minimum SIP, and more.
+        </p>
+        <div class="welcome-tags" aria-label="Supported topics">
+          <span class="tag">NAV</span>
+          <span class="tag">Expense Ratio</span>
+          <span class="tag">Exit Load</span>
+          <span class="tag">Min SIP</span>
+          <span class="tag">Fund Manager</span>
+          <span class="tag">Category</span>
+        </div>
+      </div>
+
+      <!-- Chat history area -->
+      <section
+        class="chat-history"
+        id="chat-history"
+        aria-label="Chat history"
+        aria-live="polite"
+        role="log"
+      >
+        <!-- Messages inserted by script.js -->
+      </section>
+
+      <!-- Input area -->
+      <div class="input-area" id="input-area">
+        <form class="input-row" id="chat-form" aria-label="Ask a question" novalidate>
+          <label for="query-input" class="sr-only">Your question</label>
+          <div class="input-wrapper">
+            <input
+              type="text"
+              id="query-input"
+              class="query-input"
+              placeholder="Ask about an HDFC scheme…"
+              maxlength="500"
+              autocomplete="off"
+              autocorrect="off"
+              spellcheck="true"
+              aria-required="true"
+              aria-describedby="char-counter"
+            />
+            <span class="char-counter" id="char-counter" aria-live="polite">0 / 500</span>
+          </div>
+          <button type="submit" id="send-btn" class="send-btn" aria-label="Send message">
+            <svg class="send-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="send-text">Send</span>
+          </button>
+        </form>
+        <p class="input-footer">
+          Facts only · No investment advice · Powered by HDFC corpus + RAG
+        </p>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Toast container for rate limit / error notifications -->
+  <div class="toast-container" id="toast-container" aria-live="assertive" role="status"></div>
 
   <script src="script.js"></script>
 </body>
