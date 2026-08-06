@@ -30,10 +30,14 @@ from collections import defaultdict, deque
 from contextlib import asynccontextmanager
 from pathlib import Path
 
+from dotenv import load_dotenv
+load_dotenv()  # Load .env before any module reads environment variables
+
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+
 
 # ── Encoding fix (Windows compatibility) ──────────────────────────────────────
 if sys.stdout and hasattr(sys.stdout, "buffer"):
