@@ -59,7 +59,7 @@ _ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
 
 _ALLOWED_ORIGINS_RAW = os.getenv(
     "ALLOWED_ORIGINS",
-    "http://localhost:8000,http://127.0.0.1:8000,http://localhost:3000",
+    "http://localhost:8000,http://127.0.0.1:8000,http://localhost:3000,https://rag-chat-bot-lac.vercel.app",
 )
 _ALLOWED_ORIGINS: list[str] = [
     o.strip() for o in _ALLOWED_ORIGINS_RAW.split(",") if o.strip()
