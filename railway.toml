@@ -3,8 +3,7 @@
 # Docs: https://docs.railway.app/reference/config-as-code
 
 [build]
-# Railway auto-detects Python. nixpacks builds using requirements.txt
-builder = "nixpacks"
+builder = "docker"
 
 [deploy]
 startCommand = "uvicorn src.main:app --host 0.0.0.0 --port $PORT --workers 1"
