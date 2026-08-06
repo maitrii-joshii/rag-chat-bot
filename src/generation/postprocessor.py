@@ -1,20 +1,22 @@
 """
-Generation -- Response Post-processor (Task 2.7)
+Generation -- Response Post-processor (Tasks 2.7 & 3.5)
 
-Task 2.7 -- Post-processor:
+Task 2.7 -- Post-processor (Phase 2):
   Validates the raw Groq LLM response against format rules, and applies
   light corrections where possible before returning. Hard failures raise
   ValueError so the generator can surface them cleanly.
 
-Checks enforced (Phase 2):
+Task 3.5 -- Post-Generation Validation (Phase 3):
+  Scans LLM output for advisory language and PII after generation.
+  Both checks are now hard failures (raise ValueError).
+
+Checks enforced:
   1. Response is non-empty.
   2. Citation present: [Source: <url>] pattern exists.
   3. Footer present: "Last updated from sources:" line exists.
   4. Answer body does not exceed 3 sentences (soft truncation applied).
-
-Checks added in Phase 3:
-  5. No advisory language in LLM output (post-gen safety).
-  6. No PII patterns in LLM output.
+  5. No advisory language in LLM output (hard block -- Task 3.5).
+  6. No PII patterns in LLM output (hard block -- Task 3.5).
 
 Architecture reference: §7.1 Response Construction Flow, §3.7 Guardrails
 """
@@ -98,17 +100,29 @@ def validate_response(response: str) -> str:
             "LLM response is missing the required 'Last updated from sources:' footer."
         )
 
-    # ── Check 3: Advisory language (Phase 2 -- soft check, log only) ──────────
-    # Full enforcement is added in Phase 3 when guardrails are wired in.
+    # ── Check 3: Advisory language (Task 3.5 -- hard block) ────────────────────
     for pattern in _ADVISORY_PATTERNS:
         match = pattern.search(response)
         if match:
-            logger.warning(
-                "Advisory language detected in LLM output: %r (matched: %r)",
-                response[:120], match.group(0),
+            logger.error(
+                "Advisory language detected in LLM output (blocked): %r",
+                match.group(0),
             )
-            # Phase 2: log and warn. Phase 3: raise ValueError.
-            break
+            raise ValueError(
+                f"LLM response contains advisory language ({match.group(0)!r}) "
+                "and cannot be served. This is a post-generation safety violation."
+            )
+
+    # ── Check 4: PII in LLM output (Task 3.5 -- hard block) ──────────────────
+    from src.guardrails.pii_detector import detect_pii
+    pii_found = detect_pii(response)
+    if pii_found:
+        pii_types = list(pii_found.keys())
+        logger.error("PII detected in LLM output (blocked): types=%s", pii_types)
+        raise ValueError(
+            f"LLM response contains PII ({pii_types}) and cannot be served. "
+            "This is a post-generation safety violation."
+        )
 
     # ── Check 4: Sentence count (soft truncation) ─────────────────────────────
     response = _enforce_sentence_limit(response, max_sentences=3)
