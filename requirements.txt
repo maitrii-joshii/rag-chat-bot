@@ -20,6 +20,7 @@ groq>=0.9.0
 # ── Document Loading ─────────────────────────
 beautifulsoup4>=4.12.0
 requests>=2.32.0
+brotli>=1.1.0          # Brotli decompression for requests (Groww uses br encoding)
 pdfplumber>=0.11.0
 
 # ── Guardrails ───────────────────────────────
