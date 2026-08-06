@@ -19,4 +19,4 @@ RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTr
 COPY . .
 
 # Start the application programmatically
-CMD python src/main.py
+CMD python -m src.main

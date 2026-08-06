@@ -3,6 +3,6 @@
 # Docs: https://docs.railway.app/reference/config-as-code
 
 [deploy]
-startCommand = "python src/main.py"
+startCommand = "python -m src.main"
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
