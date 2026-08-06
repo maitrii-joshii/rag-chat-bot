@@ -3,6 +3,6 @@
 # Docs: https://docs.railway.app/reference/config-as-code
 
 [deploy]
-startCommand = "uvicorn src.main:app --host 0.0.0.0 --port $PORT --workers 1"
+startCommand = "python src/main.py"
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
