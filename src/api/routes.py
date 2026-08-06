@@ -23,7 +23,7 @@ from __future__ import annotations
 import logging
 import os
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, BackgroundTasks, Request
 
 from src.api.schemas import (
     ChatRequest,
