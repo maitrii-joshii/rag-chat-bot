@@ -18,5 +18,5 @@ RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTr
 # Copy the rest of the application
 COPY . .
 
-# Railway dynamically provides the PORT environment variable
-CMD sh -c "uvicorn src.main:app --host 0.0.0.0 --port ${PORT:-8000}"
+# Start the application programmatically
+CMD python src/main.py
