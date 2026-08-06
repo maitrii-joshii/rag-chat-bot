@@ -70,7 +70,7 @@ print("  PASS: reranker handles empty chunks")
 
 # ── Test retrieve with empty/invalid vectorstore ───────────────────────────────
 print("\nTesting retrieve with missing vectorstore (graceful fallback)...")
-result = retrieve("What is the expense ratio?", vectorstore_path="./data/does_not_exist")
+result = retrieve("What is the expense ratio?", vectorstore_path="./_nonexistent_vs_test")
 assert result == [], f"Expected [] on missing store, got {result}"
 print("  PASS: retrieve returns [] when vectorstore missing")
 

@@ -65,3 +65,6 @@ dmypy.json
 
 # ── Raw fetched content (audit trail — optional) ─
 data/raw/
+
+# Stray test vectorstore directories
+_nonexistent_vs_test/
