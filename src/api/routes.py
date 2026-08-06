@@ -210,3 +210,25 @@ async def health() -> HealthResponse:
 async def examples() -> ExamplesResponse:
     """Return example questions for the chat UI."""
     return ExamplesResponse(examples=_EXAMPLE_QUESTIONS)
+
+# ── POST /api/admin/ingest ────────────────────────────────────────────────────
+
+@router.post("/admin/ingest", include_in_schema=False)
+async def admin_ingest(background_tasks: BackgroundTasks):
+    """Trigger the ingestion pipeline in the background using the loaded model."""
+    from scripts.ingest import load_corpus, run_pipeline
+    from pathlib import Path
+    
+    def _run_ingest():
+        try:
+            corpus_path = Path("data/corpus.yml")
+            vectorstore_path = Path(os.getenv("VECTORSTORE_PATH", "data/vectorstore"))
+            sources = load_corpus(corpus_path)
+            # Disable caching on requests to avoid holding memory
+            run_pipeline(sources, vectorstore_path)
+            logger.info("Background ingestion completed successfully")
+        except Exception as e:
+            logger.error("Background ingestion failed: %s", e)
+            
+    background_tasks.add_task(_run_ingest)
+    return {"status": "Ingestion started in background"}
