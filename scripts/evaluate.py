@@ -87,15 +87,77 @@ def parse_args() -> argparse.Namespace:
 
 
 def evaluate(vectorstore_path: Path) -> dict:
-    """Run all gold-standard queries and compute metrics.
-
-    Phase 0: Stub — returns empty metrics dict.
-    Phase 5: Full implementation.
-    """
-    raise NotImplementedError(
-        "evaluate.evaluate is a Phase 0 stub. Full implementation in Phase 5."
-    )
-
+    """Run all gold-standard queries and compute metrics."""
+    # We set VECTORSTORE_PATH in the environment so src.main picks it up
+    import os
+    os.environ["VECTORSTORE_PATH"] = str(vectorstore_path)
+    
+    # Import app inside the function so env vars are applied
+    from fastapi.testclient import TestClient
+    from src.main import app
+    
+    client = TestClient(app)
+    
+    total = len(GOLD_STANDARD)
+    hits = 0
+    coverage = 0
+    correct_refusals = 0
+    factual_count = sum(1 for q in GOLD_STANDARD if not q["should_refuse"])
+    refusal_count = total - factual_count
+    
+    for item in GOLD_STANDARD:
+        query = item["query"]
+        print(f"Testing: {query}")
+        
+        response = client.post("/api/chat", json={"query": query, "session_id": "eval"})
+        if response.status_code != 200:
+            print(f"  [ERROR] Status {response.status_code}: {response.text}")
+            continue
+            
+        data = response.json()
+        
+        if item["should_refuse"]:
+            if data["query_type"] not in ["factual"]:
+                correct_refusals += 1
+                print("  [OK] Correctly refused.")
+            else:
+                print(f"  [FAIL] Expected refusal, but got factual answer.")
+            continue
+            
+        # It's a factual query
+        answer = data["answer"]
+        citation = data["citation"]
+        
+        # 1. Hit Rate Check
+        if citation and citation["scheme_name"] == item["expected_scheme"]:
+            hits += 1
+            print("  [OK] Hit: correct scheme retrieved.")
+        else:
+            got = citation["scheme_name"] if citation else "None"
+            print(f"  [FAIL] Miss: expected {item['expected_scheme']}, got {got}")
+            
+        # 2. Answer Coverage Check
+        all_terms_present = True
+        for term in item["expected_key_terms"]:
+            if term.lower() not in answer.lower():
+                all_terms_present = False
+                print(f"  [FAIL] Missing expected term in answer: '{term}'")
+        
+        if all_terms_present:
+            coverage += 1
+            if item["expected_key_terms"]:
+                 print("  [OK] Coverage: all key terms present in answer.")
+                 
+    hit_rate = (hits / factual_count) * 100 if factual_count else 0
+    coverage_rate = (coverage / factual_count) * 100 if factual_count else 0
+    refusal_rate = (correct_refusals / refusal_count) * 100 if refusal_count else 0
+    
+    return {
+        "hit_rate": hit_rate,
+        "coverage_rate": coverage_rate,
+        "refusal_rate": refusal_rate,
+        "total": total,
+    }
 
 def main() -> None:
     args = parse_args()
@@ -104,8 +166,16 @@ def main() -> None:
     print("  RAG Mutual Fund FAQ Assistant — Evaluation")
     print("=" * 60)
     print(f"[INFO] Gold-standard queries: {len(GOLD_STANDARD)}")
-    print("[WARN] Evaluation is a Phase 0 stub — implement in Phase 5.")
-
+    
+    metrics = evaluate(args.vectorstore)
+    
+    print("=" * 60)
+    print("  Evaluation Results")
+    print("=" * 60)
+    print(f"Hit Rate (Correct Retrieval): {metrics['hit_rate']:.1f}%")
+    print(f"Answer Coverage (Key Terms):  {metrics['coverage_rate']:.1f}%")
+    print(f"Refusal Rate (Guardrails):    {metrics['refusal_rate']:.1f}%")
+    print("=" * 60)
 
 if __name__ == "__main__":
     main()

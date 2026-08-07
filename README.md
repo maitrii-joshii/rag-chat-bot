@@ -2,6 +2,9 @@
 
 > A facts-only Q&A chatbot for **HDFC Mutual Fund** schemes — powered by a RAG (Retrieval-Augmented Generation) pipeline using ChromaDB, BGE embeddings, and the Groq LLM API.
 
+[![Frontend](https://img.shields.io/badge/Frontend-Vercel-black?logo=vercel)](https://rag-chat-bot-lac.vercel.app/)
+[![Backend API](https://img.shields.io/badge/Backend-Railway-5C2096?logo=railway)](https://rag-chat-bot-production.up.railway.app/api/health)
+
 ---
 
 ## Overview
@@ -144,6 +147,24 @@ uvicorn src.main:app --reload --port 8000
 ```
 
 Open `http://localhost:8000` in your browser.
+
+---
+
+## Cloud Deployment
+
+The application is designed for a split-stack deployment using Vercel and Railway.
+
+### 1. Backend (Railway)
+1. Deploy the repository to Railway.
+2. Add a persistent volume and mount it to `/app/data`.
+3. Set the `GROQ_API_KEY` environment variable.
+4. Set `ALLOWED_ORIGINS` to your Vercel frontend URL.
+5. Trigger initial ingestion via `POST /api/admin/ingest`.
+
+### 2. Frontend (Vercel)
+1. Import the repository in Vercel.
+2. Set the **Root Directory** to `src/ui`.
+3. Deploy! (Vercel automatically handles routing to Railway via `vercel.json`).
 
 ---
 
