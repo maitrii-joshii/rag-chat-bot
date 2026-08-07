@@ -43,7 +43,6 @@ data/vectorstore/
 .coverage
 htmlcov/
 .tox/
-*.log
 
 # ── IDEs & Editors ───────────────────────────
 .vscode/
@@ -66,5 +65,15 @@ dmypy.json
 # ── Raw fetched content (audit trail — optional) ─
 data/raw/
 
-# Stray test vectorstore directories
+# ── Stray test vectorstore directories ────────
 _nonexistent_vs_test/
+
+# ── Deployment artifacts ───────────────────────
+nixpacks.toml
+.railway/
+.vercel/
+
+# ── Log files ─────────────────────────────────
+*.log
+logs/
+
