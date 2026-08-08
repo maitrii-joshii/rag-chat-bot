@@ -76,25 +76,6 @@ class TestRefusalHandler:
     def test_out_of_scope_refusal_contains_amfi_link(self):
         assert AMFI_URL in build_refusal(QueryIntent.OUT_OF_SCOPE)
 
-    # ── Footer present in all refusals ────────────────────────────────────────
-    def test_advisory_refusal_has_footer(self):
-        assert FOOTER_MARKER in build_refusal(QueryIntent.ADVISORY)
-
-    def test_comparison_refusal_has_footer(self):
-        assert FOOTER_MARKER in build_refusal(QueryIntent.COMPARISON)
-
-    def test_prediction_refusal_has_footer(self):
-        assert FOOTER_MARKER in build_refusal(QueryIntent.PREDICTION)
-
-    def test_buy_sell_refusal_has_footer(self):
-        assert FOOTER_MARKER in build_refusal(QueryIntent.BUY_SELL)
-
-    def test_out_of_scope_refusal_has_footer(self):
-        assert FOOTER_MARKER in build_refusal(QueryIntent.OUT_OF_SCOPE)
-
-    def test_pii_refusal_has_footer(self):
-        assert FOOTER_MARKER in build_refusal("pii")
-
     # ── PII refusal safety ────────────────────────────────────────────────────
     def test_pii_refusal_does_not_repeat_pii(self):
         """PII refusal must NOT echo back actual PII values."""

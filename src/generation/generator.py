@@ -35,8 +35,7 @@ DEFAULT_MAX_TOKENS: int = int(os.getenv("GROQ_MAX_TOKENS", "150"))
 # No Groq API call is made in this path -- zero LLM cost.
 NO_INFORMATION_RESPONSE: str = (
     "I don't have that information in my current knowledge base. "
-    "Please visit https://www.amfiindia.com for authoritative fund details. "
-    "Last updated from sources: N/A"
+    "Please visit https://www.amfiindia.com for authoritative fund details."
 )
 
 # Module-level Groq client cache -- created once per process.
