@@ -78,34 +78,59 @@ jobs:
               fh.write(f"is_holiday={'true' if is_holiday else 'false'}\n")
           EOF
 
-  # ── Job 2: Trigger Railway Ingestion ─────────────────────────────────────────
+  # ── Job 2: Run Ingestion on GitHub Actions Runner ───────────────────────────
   ingest:
-    name: Trigger Railway Ingestion
+    name: Run Ingestion & Commit Vectorstore
     runs-on: ubuntu-latest
     needs: check-holiday
     if: needs.check-holiday.outputs.is_holiday == 'false'
+    # Allow pushing the updated vectorstore back to the repo
+    permissions:
+      contents: write
 
     steps:
-      - name: Trigger Railway Endpoint
-        run: |
-          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST https://rag-chat-bot-production.up.railway.app/api/admin/ingest)
-          if [ "$HTTP_STATUS" -ne 200 ]; then
-            echo "Failed to trigger ingestion! HTTP Status: $HTTP_STATUS"
-            exit 1
-          fi
-          echo "Ingestion triggered successfully."
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Wait for Background Task
-        run: sleep 45
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
 
-      - name: Verify Health Endpoint
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run ingestion pipeline
+        env:
+          VECTORSTORE_PATH: ${{ env.VECTORSTORE }}
+          VECTORSTORE_COLLECTION: "mf_faq_v1"
         run: |
-          CHUNKS=$(curl -s https://rag-chat-bot-production.up.railway.app/api/health | grep -o '"vectorstore_chunks":[0-9]*' | cut -d':' -f2)
-          if [ -z "$CHUNKS" ] || [ "$CHUNKS" -eq 0 ]; then
-            echo "Ingestion failed to populate chunks! (Count is 0 or missing)"
-            exit 1
-          fi
-          echo "Verified vector store is populated with $CHUNKS chunks."
+          python scripts/ingest.py \
+            --config ${{ env.CORPUS_CONFIG }} \
+            --output ${{ env.VECTORSTORE }} \
+            --force
+
+      - name: Verify chunks were created
+        run: |
+          python - <<'EOF'
+          import chromadb, sys
+          client = chromadb.PersistentClient(path="data/vectorstore")
+          col = client.get_collection("mf_faq_v1")
+          count = col.count()
+          print(f"Chunks in vectorstore: {count}")
+          if count == 0:
+              print("ERROR: Vectorstore is empty after ingestion!")
+              sys.exit(1)
+          EOF
+
+      - name: Commit updated vectorstore
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(data): auto-update vectorstore [skip ci]"
+          file_pattern: "data/vectorstore/**"
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "github-actions[bot]@users.noreply.github.com"
 
   # ── Job 3: Failure Notification ────────────────────────────────────────────
   notify-failure:

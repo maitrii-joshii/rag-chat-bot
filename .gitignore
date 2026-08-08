@@ -35,8 +35,8 @@ ENV/
 .env.local
 .env.*.local
 
-# ── Vector Store (large binary data) ─────────
-data/vectorstore/
+# ── Vector Store (committed to Git for Railway deployment) ────────────────
+# data/vectorstore/  ← intentionally tracked so Railway has data on deploy
 
 # ── Pytest / Testing ─────────────────────────
 .pytest_cache/

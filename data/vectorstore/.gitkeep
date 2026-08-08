@@ -1,0 +1,3 @@
+# This file keeps the data/vectorstore/ directory tracked by git.
+# The actual ChromaDB binary files are excluded via .gitignore.
+# Run `python scripts/ingest.py` to populate this directory.
