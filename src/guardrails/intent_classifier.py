@@ -35,6 +35,7 @@ class QueryIntent(str, Enum):
     COMPARISON  = "comparison"
     PREDICTION  = "prediction"
     BUY_SELL    = "buy_sell"
+    GREETING    = "greeting"
     OUT_OF_SCOPE = "out_of_scope"
 
 
@@ -94,6 +95,11 @@ _BUY_SELL_PATTERNS: list[re.Pattern[str]] = [
     re.compile(r"\bpartial\s+(?:redemption|withdrawal|exit)\b", re.I),
 ]
 
+# ── Greeting Patterns ──────────────────────────────────────────────────────────
+_GREETING_PATTERNS: list[re.Pattern[str]] = [
+    re.compile(r"^\s*(?:hello|hi|hey|good\s+(?:morning|afternoon|evening|day)|greetings|namaste)[!\.\,\s]*$", re.I),
+]
+
 # ── Task 3.3: Mutual-Fund Topic Keywords (Out-of-Scope Detection) ─────────────
 # A query is in-scope if it contains at least one of these keyword patterns.
 _MF_TOPIC_PATTERNS: list[re.Pattern[str]] = [
@@ -147,7 +153,12 @@ def classify(query: str) -> QueryIntent:
         if pattern.search(query):
             return QueryIntent.PREDICTION
 
-    # Priority 5: Out-of-Scope (Task 3.3)
+    # Priority 5: Greeting
+    for pattern in _GREETING_PATTERNS:
+        if pattern.search(query):
+            return QueryIntent.GREETING
+
+    # Priority 6: Out-of-Scope (Task 3.3)
     if not _is_mf_related(query):
         return QueryIntent.OUT_OF_SCOPE
 

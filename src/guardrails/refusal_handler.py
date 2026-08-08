@@ -19,6 +19,11 @@ AMFI_URL: str = "https://www.amfiindia.com"
 # ── Refusal Templates (Task 3.4) ──────────────────────────────────────────────
 # Each template is a single-string refusal response. All include AMFI_URL.
 _REFUSAL_TEMPLATES: dict[str | QueryIntent, str] = {
+    QueryIntent.GREETING: (
+        "Hello! 👋 I am the HDFC Mutual Fund FAQ Assistant. "
+        "I can help you with factual details (like NAV, expense ratio, exit load, or minimum SIP) "
+        "for 12 specific HDFC Mutual Fund schemes. How can I help you today?"
+    ),
     QueryIntent.ADVISORY: (
         "I'm a facts-only assistant and cannot provide investment advice or recommendations. "
         f"For personalised guidance, please consult a SEBI-registered financial adviser "
