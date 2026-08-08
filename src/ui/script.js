@@ -63,10 +63,10 @@ async function checkHealth() {
 
     if (data.status === "healthy") {
       dot.className = "chip-dot chip-dot--green";
-      healthText.textContent = `Ready · ${data.vectorstore_chunks} chunks`;
+      healthText.textContent = "Ready";
     } else {
       dot.className = "chip-dot chip-dot--yellow";
-      healthText.textContent = "Degraded — limited functionality";
+      healthText.textContent = "Service starting up…";
     }
   } catch {
     dot.className = "chip-dot chip-dot--red";
