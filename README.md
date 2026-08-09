@@ -1,5 +1,7 @@
 # RAG Mutual Fund FAQ Assistant
 
+**Project Link**: [https://rag-chat-bot-lac.vercel.app/](https://rag-chat-bot-lac.vercel.app/)
+
 > A facts-only Q&A chatbot for **HDFC Mutual Fund** schemes — powered by a full RAG (Retrieval-Augmented Generation) pipeline built with ChromaDB, BGE embeddings, and the Groq LLM API.
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-black?logo=vercel&logoColor=white)](https://rag-chat-bot-lac.vercel.app/)
