@@ -301,11 +301,11 @@ Latest results against the gold-standard Q&A set:
 The GitHub Actions workflow at [`.github/workflows/weekday-ingest.yml`](.github/workflows/weekday-ingest.yml) runs automatically every **Monday–Saturday at 10:30 AM IST** (05:00 UTC).
 
 **Workflow steps:**
-1. 🗓️ **Holiday check** — reads `data/holidays.json`, skips NSE/BSE holidays.
-2. 🚀 **Trigger ingestion** — calls `POST /api/admin/ingest` on the live Railway backend.
-3. ⏳ **Wait 45 seconds** — allows the background task to complete.
-4. ✅ **Verify health** — checks `/api/health` for a non-zero chunk count.
-5. 🚨 **Failure alert** — creates a GitHub Issue with a link to the failed run log if any step fails.
+1. **Holiday check** — reads `data/holidays.json`, skips NSE/BSE holidays.
+2. **Trigger ingestion** — calls `POST /api/admin/ingest` on the live Railway backend.
+3. **Wait 45 seconds** — allows the background task to complete.
+4. **Verify health** — checks `/api/health` for a non-zero chunk count.
+5. **Failure alert** — creates a GitHub Issue with a link to the failed run log if any step fails.
 
 You can also trigger it manually via the **Actions → Weekday Ingestion → Run workflow** button.
 
