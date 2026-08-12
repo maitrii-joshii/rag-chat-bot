@@ -62,7 +62,7 @@ class ChatRequest(BaseModel):
 
 # All valid query_type values (mirrors QueryIntent enum + "pii_blocked")
 VALID_QUERY_TYPES: frozenset[str] = frozenset(
-    {"factual", "advisory", "comparison", "prediction", "buy_sell", "out_of_scope", "pii_blocked"}
+    {"factual", "advisory", "comparison", "prediction", "buy_sell", "out_of_scope", "pii_blocked", "greeting"}
 )
 
 
@@ -90,7 +90,7 @@ class ChatResponse(BaseModel):
         ...,
         description=(
             "Intent classification: factual | advisory | comparison | "
-            "prediction | buy_sell | out_of_scope | pii_blocked"
+            "prediction | buy_sell | out_of_scope | pii_blocked | greeting"
         ),
     )
 

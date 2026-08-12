@@ -320,6 +320,7 @@ function appendTypingIndicator() {
 /** Badge labels and icons per query type */
 const BADGE_CONFIG = {
   factual:      { label: "✅ Factual",      cls: "badge--factual" },
+  greeting:     { label: "👋 Greeting",     cls: "badge--out_of_scope" },
   advisory:     { label: "🚫 Advisory",     cls: "badge--advisory" },
   comparison:   { label: "⚖️ Comparison",   cls: "badge--comparison" },
   prediction:   { label: "🔮 Prediction",   cls: "badge--prediction" },
