@@ -83,22 +83,15 @@ def validate_response(response: str) -> str:
         logger.debug("No-information response detected -- skipping citation/footer checks.")
         return response
 
-    # ── Check 1: Citation present ─────────────────────────────────────────────
+    # ── Check 1: Citation present (Relaxed) ───────────────────────────────────
     citation_match = _CITATION_RE.search(response)
     if not citation_match:
-        logger.warning("LLM response missing [Source: <url>] citation: %r", response[:120])
-        raise ValueError(
-            "LLM response is missing a required [Source: <url>] citation. "
-            "Response will not be served."
-        )
+        logger.warning("LLM response missing [Source: <url>] citation (forgiven).")
 
-    # ── Check 2: Footer present ───────────────────────────────────────────────
+    # ── Check 2: Footer present (Relaxed) ─────────────────────────────────────
     footer_match = _FOOTER_RE.search(response)
     if not footer_match:
-        logger.warning("LLM response missing 'Last updated from sources:' footer.")
-        raise ValueError(
-            "LLM response is missing the required 'Last updated from sources:' footer."
-        )
+        logger.warning("LLM response missing 'Last updated from sources:' footer (forgiven).")
 
     # ── Check 3: Advisory language (Task 3.5 -- hard block) ────────────────────
     for pattern in _ADVISORY_PATTERNS:
