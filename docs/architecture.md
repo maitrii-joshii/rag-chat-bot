@@ -293,7 +293,7 @@ User Query
 |-----------|--------|
 | **Purpose** | Synthesise a concise, factual answer from retrieved context |
 | **Provider** | **Groq** (ultra-low-latency inference cloud) |
-| **Model** | `llama-3.1-8b-instant` (default) or `mixtral-8x7b-32768` (complex queries) |
+| **Model** | `openai/gpt-oss-120b` (default) or `qwen/qwen3.6-27b` (fallback) |
 | **Temperature** | `0.0` – `0.2` (deterministic, factual output) |
 | **Max Output Tokens** | ~150 (to enforce ≤ 3 sentences) |
 
@@ -1015,7 +1015,7 @@ flowchart TD
 | **Language** | Python 3.11+ | Rich ML/NLP ecosystem, LangChain compatibility |
 | **Web Framework** | FastAPI | Async support, auto-generated OpenAPI docs, lightweight |
 | **Frontend** | HTML/CSS/JS (vanilla) | Minimal UI requirement; deployed on **Vercel** |
-| **LLM** | **Groq** (`llama-3.1-8b-instant`) | Ultra-low-latency inference, generous free tier, open-source models |
+| **LLM** | **Groq** (`openai/gpt-oss-120b`, fallback: `qwen/qwen3.6-27b`) | Ultra-low-latency inference, generous free tier, open-source models |
 | **Embedding Model** | **BGE** (`bge-small-en-v1.5` / `bge-large-en-v1.5`) | MTEB top-ranked, local inference, no API cost |
 | **Vector Store** | ChromaDB | Zero-infra, persistent, Python-native |
 | **Orchestration** | LangChain / LlamaIndex | Standardised RAG pipeline abstractions |
@@ -1158,7 +1158,8 @@ rag-chat-bot/
 ```env
 # LLM Configuration (Groq)
 LLM_PROVIDER=groq
-LLM_MODEL=llama-3.1-8b-instant         # or mixtral-8x7b-32768
+LLM_MODEL=openai/gpt-oss-120b
+LLM_FALLBACK_MODEL=qwen/qwen3.6-27b
 GROQ_API_KEY=your-groq-api-key-here
 LLM_TEMPERATURE=0.1
 LLM_MAX_TOKENS=150
@@ -1353,7 +1354,7 @@ See [Section 4.1](#41-corpus-registry-corpusyml) for the schema.
 
 ### ADR-007: Groq as LLM Provider
 
-- **Decision**: Use Groq for LLM inference with open-source models (`llama-3.1-8b-instant`)
+- **Decision**: Use Groq for LLM inference with open-source models (`openai/gpt-oss-120b` primary, `qwen/qwen3.6-27b` fallback)
 - **Rationale**: Sub-second inference latency via Groq's LPU hardware. Generous free tier (currently ~14,400 requests/day on free plan). Open-source model weights ensure no vendor lock-in — can switch to self-hosted or another provider. Sufficient for factual Q&A.
 - **Alternatives Considered**: OpenAI GPT-4o-mini (higher cost, proprietary), Gemini Flash (good but Groq is faster for this use case), self-hosted Ollama (requires GPU server).
 - **Tradeoffs**: Free tier rate limits may constrain high-traffic production use; mitigate with response caching. Model quality slightly below GPT-4o for nuanced queries, but adequate for facts-only retrieval.

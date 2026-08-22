@@ -20,7 +20,7 @@ This assistant answers **factual questions** about 12 HDFC Mutual Fund schemes �
 2. **Chunk & Embed** — Text is chunked and embedded using `BAAI/bge-small-en-v1.5`.
 3. **Store** — Embeddings are persisted in a ChromaDB vector store.
 4. **Retrieve** — User queries are embedded and matched via cosine similarity.
-5. **Generate** — Relevant chunks are passed to Groq's LLM (`llama-3.1-8b-instant`) to produce a cited, factual answer.
+5. **Generate** — Relevant chunks are passed to Groq's LLM (`openai/gpt-oss-120b`, fallback: `qwen/qwen3.6-27b`) to produce a cited, factual answer.
 6. **Guard** — PII detection and advisory-intent classification block unsafe or out-of-scope queries.
 
 The assistant **never** provides investment advice, performance comparisons, or predictions.
@@ -56,7 +56,7 @@ Query Pipeline (per request):
   Retriever  ──► BGE embed query → ChromaDB cosine search → top-k chunks (≥ 0.65)
       │
       ▼
-  Generator  ──► Groq LLM (llama-3.1-8b-instant) + retrieved context
+  Generator  ──► Groq LLM (openai/gpt-oss-120b / fallback: qwen/qwen3.6-27b) + retrieved context
       │
       ▼
   Post-processor ──► Validate output, extract citation, strip advisory language
@@ -94,7 +94,7 @@ Full architecture details: [`docs/architecture.md`](docs/architecture.md)
 |-------|------------|-------|
 | Embedding | `BAAI/bge-small-en-v1.5` (sentence-transformers) | 384-dim, cosine similarity |
 | Vector Store | ChromaDB (persistent) | Score threshold ≥ 0.65 |
-| LLM | Groq API — `llama-3.1-8b-instant` | Via REST API |
+| LLM | Groq API — `openai/gpt-oss-120b` (fallback: `qwen/qwen3.6-27b`) | Via REST API |
 | Framework | FastAPI + Uvicorn | ASGI, async |
 | Frontend | Vanilla HTML / CSS / JS | No framework needed |
 | Scheduler | GitHub Actions cron | Mon–Sat, 10:30 AM IST |

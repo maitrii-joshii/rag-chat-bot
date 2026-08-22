@@ -136,7 +136,7 @@ This document catalogues edge cases, boundary conditions, and adversarial inputs
 | EC-3.2.5 | LLM generates investment advice despite system prompt | 🔴 Critical | Post-generation advisory scan detects and strips | Post-gen guardrail catches this |
 | EC-3.2.6 | LLM generates PII in response | 🔴 Critical | Post-generation PII scan detects and blocks | Post-gen PII guardrail |
 | EC-3.2.7 | LLM returns empty response | 🟠 High | Return "I couldn't generate an answer. Please try again." | Edge case when context is confusing |
-| EC-3.2.8 | LLM generates response in a different language | 🟡 Medium | Accept if intelligible; system prompt says "Respond in English" | Rare with Llama 3.1 |
+| EC-3.2.8 | LLM generates response in a different language | 🟡 Medium | Accept if intelligible; system prompt says "Respond in English" | Rare with openai/gpt-oss-120b |
 | EC-3.2.9 | LLM response contains markdown/HTML formatting | 🟢 Low | Strip formatting in post-processor, serve plain text | Clean output |
 
 ---

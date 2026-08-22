@@ -250,7 +250,7 @@ print(f'Total chunks: {col.count()}')
 | 2.3 | **Metadata Pre-filtering** — If query mentions a specific fund, filter by `scheme_name` before vector search | `src/retrieval/retriever.py` | [§6.2](./architecture.md#62-retrieval-modes) |
 | 2.4 | **System Prompt** — Define the facts-only system prompt with response format rules | `src/generation/prompts.py` | [§3.6](./architecture.md#36-generator-llm) |
 | 2.5 | **Prompt Template** — Context assembly template (chunks + metadata + query) | `src/generation/prompts.py` | [§3.6](./architecture.md#36-generator-llm) |
-| 2.6 | **Generator** — Invoke Groq API (`llama-3.1-8b-instant`, temp=0.1, max_tokens=150) | `src/generation/generator.py` | [§3.6](./architecture.md#36-generator-llm) |
+| 2.6 | **Generator** — Invoke Groq API (`openai/gpt-oss-120b` with `qwen/qwen3.6-27b` fallback, temp=0.1, max_tokens=150) | `src/generation/generator.py` | [§3.6](./architecture.md#36-generator-llm) |
 | 2.7 | **Post-processor** — Validate response (≤3 sentences, citation present, footer present) | `src/generation/postprocessor.py` | [§7.1](./architecture.md#71-response-construction-flow) |
 | 2.8 | **"No Information" fallback** — Handle case where no chunks pass the relevance threshold | `src/generation/generator.py` | [§6.3](./architecture.md#63-relevance-threshold) |
 
