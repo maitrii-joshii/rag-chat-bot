@@ -5,7 +5,7 @@
 > A facts-only Q&A chatbot for **HDFC Mutual Fund** schemes — powered by a full RAG (Retrieval-Augmented Generation) pipeline built with ChromaDB, BGE embeddings, and the Groq LLM API.
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-black?logo=vercel&logoColor=white)](https://rag-chat-bot-lac.vercel.app/)
-[![Backend API](https://img.shields.io/badge/Backend%20API-Railway-5C2096?logo=railway&logoColor=white)](https://rag-chat-bot-production.up.railway.app/api/health)
+[![Backend API](https://img.shields.io/badge/Backend%20API-Render-46E3B7?logo=render&logoColor=white)](https://rag-chat-bot.onrender.com/api/health)
 [![Tests](https://img.shields.io/badge/Tests-16%20passed-brightgreen?logo=pytest)](tests/)
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue?logo=python&logoColor=white)](https://python.org)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
@@ -213,27 +213,30 @@ Open **http://localhost:8000** in your browser.
 
 ## Cloud Deployment
 
-The app uses a split-stack architecture: **Vercel** for the static frontend and **Railway** for the Python backend.
+The app uses a split-stack architecture: **Vercel** for the static frontend and **Render** for the Python backend.
 
-### Backend — Railway
+### Backend — Render
 
-1. Create a new project on [railway.com](https://railway.com) and import this GitHub repo.
-2. In Railway → **Variables**, set:
+1. Sign up / log in at [render.com](https://render.com) and click **New → Blueprint**.
+2. Connect this GitHub repo. Render will auto-detect [`render.yaml`](render.yaml) and pre-fill all settings.
+3. In the **Environment** tab, set the one secret that isn't in `render.yaml`:
    ```
    GROQ_API_KEY=<your-key>
-   ALLOWED_ORIGINS=https://<your-vercel-url>
    ```
-3. Add a **Volume** and mount it at `/app/data` (persists ChromaDB across deploys).
-4. Railway auto-builds using the [`Dockerfile`](Dockerfile). Once live, trigger initial ingestion:
+4. Set `ALLOWED_ORIGINS` to include your Vercel URL (e.g. `https://rag-chat-bot-lac.vercel.app`).
+5. Click **Apply** — Render builds the Docker image, creates a **1 GB persistent disk** at `/data`, and starts the service.
+6. Once live, trigger initial ingestion (if not already done locally):
    ```powershell
-   Invoke-RestMethod -Uri "https://<railway-url>/api/admin/ingest" -Method Post
+   Invoke-RestMethod -Uri "https://rag-chat-bot.onrender.com/api/admin/ingest" -Method Post
    ```
+
+> **Note**: On the free tier, the service sleeps after ~15 min of inactivity. The first request after sleep takes ~30 s to warm up.
 
 ### Frontend — Vercel
 
 1. Create a new project on [vercel.com](https://vercel.com) and import this GitHub repo.
 2. Set the **Root Directory** to `src/ui`.
-3. Click **Deploy**. Vercel auto-rewrites `/api/*` requests to Railway via [`src/ui/vercel.json`](src/ui/vercel.json).
+3. Click **Deploy**. Vercel auto-rewrites `/api/*` requests to Render via [`src/ui/vercel.json`](src/ui/vercel.json).
 
 ---
 

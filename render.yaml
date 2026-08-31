@@ -1,0 +1,65 @@
+# Render configuration for RAG Mutual Fund FAQ Assistant
+# Docs: https://render.com/docs/blueprint-spec
+# Replace <your-render-service-name> after first deploy if you want a custom slug.
+
+services:
+  - type: web
+    name: rag-chat-bot
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    # Render injects $PORT automatically; CMD in Dockerfile reads it via os.environ
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: LOG_LEVEL
+        value: INFO
+
+      # ── LLM (Groq) ────────────────────────────────────────────────────────────
+      - key: LLM_PROVIDER
+        value: groq
+      - key: LLM_MODEL
+        value: openai/gpt-oss-120b
+      - key: LLM_FALLBACK_MODEL
+        value: qwen/qwen3.6-27b
+      - key: LLM_TEMPERATURE
+        value: "0.1"
+      - key: LLM_MAX_TOKENS
+        value: "150"
+      - key: GROQ_API_KEY
+        sync: false   # Set this secret manually in the Render dashboard
+
+      # ── Embeddings ────────────────────────────────────────────────────────────
+      - key: EMBEDDING_MODEL
+        value: BAAI/bge-small-en-v1.5
+
+      # ── Vector Store (ChromaDB — stored on persistent disk below) ─────────────
+      - key: VECTORSTORE_PATH
+        value: /data/vectorstore
+      - key: VECTORSTORE_COLLECTION
+        value: mf_faq_v1
+
+      # ── Retrieval ─────────────────────────────────────────────────────────────
+      - key: RETRIEVAL_TOP_K
+        value: "5"
+      - key: RETRIEVAL_SCORE_THRESHOLD
+        value: "0.65"
+
+      # ── Rate Limiting ─────────────────────────────────────────────────────────
+      - key: RATE_LIMIT_REQUESTS
+        value: "30"
+      - key: RATE_LIMIT_WINDOW_SECONDS
+        value: "60"
+
+      # ── CORS — add your Vercel URL here ──────────────────────────────────────
+      - key: ALLOWED_ORIGINS
+        value: https://your-app.vercel.app,http://localhost:3000,http://localhost:8000
+
+    # Persistent disk: mounts at /data so ChromaDB survives redeploys
+    disk:
+      name: vectorstore-data
+      mountPath: /data
+      sizeGB: 1          # Free tier allows up to 1 GB
+
+    healthCheckPath: /api/health
+
+    autoDeploy: true     # Redeploy automatically on every GitHub push

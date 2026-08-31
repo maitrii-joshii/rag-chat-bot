@@ -127,10 +127,9 @@ async def chat(request: ChatRequest) -> ChatResponse:
             detail="LLM service unavailable — GROQ_API_KEY not configured.",
         ) from exc
     except ValueError as exc:
-        # Post-generation validation failed (advisory language or PII in output)
-        logger.error("Post-generation validation failed: %s | session=%s", exc, session_id)
+        logger.error("Generation failed validation: %s", exc)
         from src.generation.generator import NO_INFORMATION_RESPONSE as _FALLBACK
-        answer = _FALLBACK
+        answer = f"{_FALLBACK} (Debug Error: {str(exc)})"
         chunks = []  # No citation for validation-failed responses
     except Exception as exc:
         logger.error("Generation failed: %s | session=%s", exc, session_id)

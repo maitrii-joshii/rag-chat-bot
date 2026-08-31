@@ -1,8 +1,0 @@
-# Railway configuration for RAG Mutual Fund FAQ Assistant
-# Architecture ref: §15.2 Production (Railway backend)
-# Docs: https://docs.railway.app/reference/config-as-code
-
-[deploy]
-startCommand = "python -m src.main"
-restartPolicyType = "on_failure"
-restartPolicyMaxRetries = 3
