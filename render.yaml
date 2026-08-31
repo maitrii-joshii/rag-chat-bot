@@ -32,9 +32,11 @@ services:
       - key: EMBEDDING_MODEL
         value: BAAI/bge-small-en-v1.5
 
-      # ── Vector Store (ChromaDB — stored on persistent disk below) ─────────────
+      # ── Vector Store (ChromaDB — baked into Docker image from git) ─────────────
+      # No persistent disk needed — vectorstore is committed to git and copied
+      # into the image via COPY . . in the Dockerfile.
       - key: VECTORSTORE_PATH
-        value: /data/vectorstore
+        value: ./data/vectorstore
       - key: VECTORSTORE_COLLECTION
         value: mf_faq_v1
 
@@ -53,12 +55,6 @@ services:
       # ── CORS — add your Vercel URL here ──────────────────────────────────────
       - key: ALLOWED_ORIGINS
         value: https://your-app.vercel.app,http://localhost:3000,http://localhost:8000
-
-    # Persistent disk: mounts at /data so ChromaDB survives redeploys
-    disk:
-      name: vectorstore-data
-      mountPath: /data
-      sizeGB: 1          # Free tier allows up to 1 GB
 
     healthCheckPath: /api/health
 
